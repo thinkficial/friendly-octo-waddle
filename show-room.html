@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CDIG AUTOMOBILES Showroom</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #210648;
+    color: #111;
+  }
+
+  /* Hero Section */
+  header {
+    background: linear-gradient(135deg, #7c3aed, #920a03);
+    color: #fff;
+    text-align: center;
+    padding: 60px 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  }
+  header h1 {
+    font-size: 48px;
+    margin: 0;
+    font-weight: 900;
+    letter-spacing: 1px;
+  }
+  header p {
+    margin-top: 12px;
+    font-size: 18px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0.95;
+  }
+
+  /* Search Bar */
+  .search-container {
+    margin: 30px auto 0;
+    max-width: 600px;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 40px;
+    padding: 10px 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  }
+  .search-container input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    padding: 8px;
+  }
+  .search-container button {
+    background: #7c3aed;
+    border: none;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 30px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .search-container button:hover {
+    background: #5b21b6;
+  }
+
+  /* Grid of Cars */
+  main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 28px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease;
+  }
+  .card:hover {
+    transform: translateY(-6px);
+  }
+  .card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+  }
+  .content {
+    padding: 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .brand {
+    font-size: 13px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .model {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 6px 0;
+  }
+  .price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #7c3aed;
+    margin-bottom: 10px;
+  }
+  .show-more {
+    background: #06b6d4;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    color: #c53232;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: auto;
+    align-self: flex-start;
+    transition: background 0.2s ease;
+  }
+  .show-more:hover {
+    background: #0e7490;
+  }
+  .description {
+    margin-top: 14px;
+    font-size: 14px;
+    line-height: 1.5;
+    display: none;
+    color: #333;
+  }
+  .card.expanded .description {
+    display: block;
+  }
+
+  /* Footer */
+  footer {
+    background: #111;
+    color: #eee;
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+  <!-- Hero -->
+  <header>
+    <h1>CDIG AUTOMOBILES</h1>
+    <p>Your trusted partner for quality cars in Nigeria — Browse our showroom and discover the perfect vehicle for you.</p>
+    <div class="search-container">
+      <input id="search" type="text" placeholder="Search cars by brand or model...">
+      <button onclick="searchCars()">Search</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <div class="grid" id="grid"></div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 CDIG AUTOMOBILES — Excellence in motion.
+  </footer>
+
+<script>
+/** Car Data (replace image paths with your own pictures) **/
+const DATA = [
+  {
+    brand: "Toyota",
+    model: "Corolla",
+    price: "₦19,500,000",
+    image: "https://www.wallpics.net/wp-content/uploads/2017/12/Toyota-Corolla-images-scaled.jpg",
+    description: "The Toyota Corolla is a reliable compact sedan, fuel-efficient and affordable, making it one of Nigeria’s most popular cars."
+  },
+  {
+    brand: "Toyota",
+    model: "Camry",
+    price: "₦56,500,000",
+    image: "https://i.ytimg.com/vi/0aV4FW_hkDk/maxresdefault.jpg",
+    description: "The Toyota Camry is a dependable sedan, well-known for its fuel efficiency, comfort, and affordability, making it one of the most popular cars."
+  },
+  {
+    brand: "Toyota",
+    model: "Avalon",
+    price: "₦43,500,000",
+    image: "https://i.pinimg.com/originals/13/d2/40/13d240d7be31775f31a3b9707b20d06e.jpg",
+    description: "The Toyota Avalon is a premium full-size sedan that combines comfort, advanced technology, and powerful performance. Known for its spacious interior, smooth ride, and reliability, it offers luxury at an affordable price, making it a top choice for drivers."
+  },
+  {
+    brand: "Toyota",
+    model: "RAV4",
+    price: "₦62,800,000",
+    image: "https://image.ksldigital.com/d7f3ca08-ed5b-4509-b52c-8487646b170d.jpg?filter=marketplace/750x563_cropped",
+    description: "The Toyota RAV4 is a versatile SUV that blends style, performance, and efficiency. With its spacious interior, advanced safety features, and strong fuel economy, it’s designed for both city driving and adventure, making it a dependable choice for drivers."
+  },
+  {
+    brand: "Toyota",
+    model: "Highlander",
+    price: "₦90,990,000",
+    image: "https://www.carscoops.com/wp-content/uploads/2023/05/2024-Toyota-Grand-Highlander-CarScoops-Review.jpg",
+    description: "The Toyota Highlander is a midsize SUV that offers the perfect balance of power, comfort, and versatility. With a roomy three-row interior, advanced safety features, and strong performance, it’s built for both family life and long-distance journeys."
+  },
+   {
+    brand: "Toyota",
+    model: "Land Cruiser",
+    price: "₦93,990,000",
+    image: "https://wallpapercave.com/wp/wp4101245.jpg",
+    description: "The Toyota Land Cruiser is a legendary SUV, celebrated for its rugged durability, powerful performance, and luxurious comfort. Built to conquer tough terrains while offering premium features, it stands as the ultimate choice for adventure and prestige."
+  },
+  {
+    brand: "Toyota",
+    model: "Hilux",
+    price: "₦74,990,000",
+    image: "https://wallpapercave.com/wp/wp2080935.jpg",
+    description: "The Toyota Hilux is a tough and reliable pickup, engineered for power, durability, and versatility. Known for handling both rough terrains and everyday tasks with ease, it delivers strength, comfort, and long-lasting performance."
+  },
+  {
+    brand: "Honda",
+    model: "Civic",
+    price: "₦22,980,000",
+    image: "https://images.olx.com.pk/thumbnails/566657279-800x600.jpeg",
+    description: "The Honda Civic combines sporty styling with excellent handling and efficiency. Loved for daily commutes."
+  },
+  {
+    brand: "Honda",
+    model: "Accord",
+    price: "₦41,700,000",
+    image: "https://www.truedelta.com/images/mk_reviews/1513750950-Accord-front-quarter-433.JPG",
+    description: "The Honda Accord is a stylish and dependable sedan, blending comfort, fuel efficiency, and advanced technology. With its spacious interior and smooth performance, it remains a favorite choice for drivers seeking reliability and elegance."
+  },
+  {
+    brand: "Honda",
+    model: "Insight",
+    price: "₦17,700,000",
+    image: "https://carcrazydan.com/wp-content/uploads/2014/04/4716948399_03b73dc908.jpg",
+    description: "The Honda Insight is a sleek hybrid sedan that combines modern design with excellent fuel efficiency. Offering advanced technology, a comfortable interior, and eco-friendly performance, it delivers both style and sustainability for everyday driving."
+  },
+  {
+    brand: "Honda",
+    model: "CR-V",
+    price: "₦69,700,000",
+    image: "https://images3.alphacoders.com/106/thumb-1920-1068471.jpg",
+    description: "The Honda CR-V is a versatile SUV, known for its spacious interior, fuel efficiency, and smooth performance. With advanced safety features and a comfortable ride, it’s built to handle both city commutes and long journeys with ease."
+  },
+  {
+    brand: "Honda",
+    model: "Pilot",
+    price: "₦88,700,000",
+    image: "https://askcorran.com/wp-content/uploads/2023/02/What-Is-A-Pilot-Car.jpg",
+    description: "The Honda Pilot is a family-friendly midsize SUV that combines space, comfort, and reliability. With three-row seating, advanced safety features, and strong performance, it’s designed to handle both daily drives and long adventures with."
+  },
+  {
+    brand: "Honda",
+    model: "Ridgeline",
+    price: "₦94,700,000",
+    image: "https://p4.wallpaperbetter.com/wallpaper/37/288/948/2015-honda-ridgeline-baja-race-truck-wallpaper-preview.jpg",
+    description: "The Honda Ridgeline is a versatile pickup truck that blends strength, comfort, and innovation. With its rugged capability, spacious cabin, and smooth car-like handling, it’s built to handle tough jobs while providing everyday convenience."
+  },
+  {
+    brand: "Honda",
+    model: "HR-V",
+    price: "₦54,700,000",
+    image: "https://www.hongliyangzhi.com/manufacturers/honda/honda-hr-v/honda-hr-v-car/honda-hr-v-car-10.jpg",
+    description: "The Honda HR-V is a compact SUV that combines sleek design, smart versatility, and fuel efficiency. With a spacious interior, advanced features, and reliable performance, it’s perfect for both city driving and weekend getaways."
+  },
+  {
+    brand: "Honda",
+    model: "Passport",
+    price: "₦71,100,000",
+    image: "https://www.motortrend.com/uploads/2024/02/2025-Honda-Passport-front-view-render.jpg",
+    description: "The Honda Passport is a rugged midsize SUV built for adventure and comfort. With powerful performance, advanced safety features, and a spacious interior, it’s designed to handle both off-road trails and everyday driving with ease."
+  },
+  {
+    brand: "Mercedes-Benz",
+    model: "C-Class",
+    price: "₦68,800,000",
+    image: "https://static.vecteezy.com/system/resources/previews/008/729/332/non_2x/side-turkey-march-01-2022-silver-mercedesbenz-cclass-is-parked-on-the-street-on-a-warm-day-against-the-backdrop-of-a-historical-house-free-photo.jpg",
+    description: "The C-Class brings luxury and performance with advanced features. A symbol of class and prestige."
+  },
+  {
+    brand: "Mercedes-Benz",
+    model: "E-Class",
+    price: "₦85,800,000",
+    image: "https://wallpaper-house.com/data/out/5/wallpaper2you_63051.jpg",
+    description: "The Mercedes-Benz E-Class is a luxury sedan that blends elegance, advanced technology, and powerful performance. With a refined interior, smooth handling, and innovative safety features, it delivers both comfort and prestige on every drive."
+  },
+  {
+    brand: "Mercedes-Benz",
+    model: "S-Class",
+    price: "₦94,800,000",
+    image: "https://images6.alphacoders.com/856/thumb-1920-856334.jpg",
+    description: "The Mercedes-Benz S-Class is the pinnacle of luxury sedans, combining unmatched comfort, cutting-edge technology, and powerful performance. With its elegant design and advanced features, it sets the standard for prestige and sophistication on the road."
+  },
+  {
+    brand: "Mercedes-Benz",
+    model: "CLA",
+    price: "₦87,760,000",
+    image: "https://auto.sapo.pt/photo/68d4fa31823c26dad34941e8/mercedes-benz-classe-cla-0.jpg",
+    description: "The Mercedes-Benz CLA is a sleek and stylish coupe-inspired sedan that combines sporty performance with modern luxury. Featuring advanced technology, dynamic handling, and a bold design, it delivers both excitement and elegance on every drive."
+  },
+  {
+    brand: "Mercedes-Benz",
+    model: "GLE",
+    price: "₦146,830,000",
+    image: "https://s3-eu-west-1.amazonaws.com/vmg.images.production/211/211_20942_I1.jpg",
+    description: "The Mercedes-Benz GLE is a luxury SUV that blends power, comfort, and advanced technology. With a spacious interior, refined design, and strong performance, it offers versatility for both city driving and long-distance journeys."
+  },
+  {
+    brand: "Mercedes-Benz",
+    model: "GLS",
+    price: "₦174,830,000",
+    image: "https://wallpapercave.com/wp/wp2081993.jpg",
+    description: "The Mercedes-Benz GLS is a full-size luxury SUV that combines commanding presence with first-class comfort. Offering three-row seating, advanced technology, and powerful performance, it delivers a premium driving experience for the whole family."
+  },
+  {
+    brand: "Mercedes-Benz",
+    model: "G-Class (G-Wagon)",
+    price: "₦240,200,000",
+    image: "https://images.pexels.com/photos/15610277/pexels-photo-15610277/free-photo-of-mercedes-benz-g-wagon.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    description: "The Mercedes-Benz G-Class, popularly known as the G-Wagon, is an iconic luxury SUV that blends rugged off-road capability with unmatched prestige. With its bold design, powerful performance, and refined interior, it stands as a symbol of strength and status."
+  },
+  {
+    brand: "BMW",
+    model: "3 Series",
+    price: "₦87,250,000",
+    image: "https://images10.gaadi.com/usedcar_image/4809957/original/processed_95e91b19-1a17-45cc-8c4f-886e1096c48e.jpg",
+    description: "The BMW 3 Series is a premium sports sedan that combines dynamic performance, modern luxury, and advanced technology. With its sleek design, agile handling, and refined comfort, it delivers the perfect balance of sportiness and everyday practicality."
+  },
+  {
+    brand: "BMW",
+    model: "5 Series",
+    price: "₦91,300,000",
+    image: "https://images10.gaadi.com/usedcar_image/4809481/original/processed_5e7164c6-2cb9-43b8-a69f-a59bfd84d6c6.jpg",
+    description: "The BMW 5 Series is a luxury sedan that blends executive comfort with sporty performance. Featuring advanced technology, elegant design, and powerful efficiency, it offers a premium driving experience for both business and leisure."
+  },
+  {
+    brand: "BMW",
+    model: "7 Series",
+    price: "₦110,400,000",
+    image: "https://www.dubicars.com/images/f5981a/fw_1300x760/drivenchy-motors/fd160f3c-3b20-4194-8aea-a75e60da29f7.jpg",
+    description: "The BMW 7 Series is the flagship luxury sedan, combining cutting-edge technology, supreme comfort, and commanding performance. With its elegant design, advanced features, and refined craftsmanship, it sets the standard for modern luxury driving."
+  },
+  {
+    brand: "BMW",
+    model: "8 Series",
+    price: "₦140,690,000",
+    image: "https://i.pinimg.com/originals/03/07/48/03074881783345aa34b3ebdc593bd462.jpg",
+    description: "The BMW 8 Series is a luxurious grand tourer that fuses breathtaking performance with elegant design. With powerful engines, advanced technology, and a premium interior, it delivers an exhilarating driving experience wrapped in sophistication."
+  },
+  {
+    brand: "BMW",
+    model: "Z4",
+    price: "₦89,240,000",
+    image: "https://images6.alphacoders.com/103/thumb-1920-1038490.jpg",
+    description: "The BMW Z4 is a stylish roadster that embodies open-top freedom, sporty performance, and modern luxury. With its sleek design, agile handling, and powerful engine options, it delivers an exhilarating driving experience on every journey."
+  },
+  {
+    brand: "BMW",
+    model: "X1",
+    price: "₦74,690,000",
+    image: "https://cdn.pixabay.com/photo/2020/07/14/13/40/bmw-5404186_1280.jpg",
+    description: "The BMW X1 is a compact luxury SUV that combines sporty performance with everyday practicality. Featuring a stylish design, advanced technology, and a versatile interior, it delivers comfort and agility for both city driving and weekend adventures."
+  },
+  {
+    brand: "BMW",
+    model: "X5",
+    price: "₦86,540,000",
+    image: "https://s.auto.drom.ru/i24222/c/photos/fullsize/bmw/x5/bmw_x5_816434.jpg",
+    description: "The BMW X5 is a luxury SUV that combines power, elegance, and versatility. With a spacious interior, advanced technology, and strong performance, it delivers comfort and confidence whether on city streets or adventurous terrains."
+  },
+  {
+    brand: "BMW",
+    model: "X7",
+    price: "₦93,540,000",
+    image: "https://cdn.motor1.com/images/mgl/lA08g/s1/bmw-x7.jpg",
+    description: "The BMW X7 is a full-size luxury SUV that offers commanding presence, powerful performance, and first-class comfort. With three-row seating, advanced technology, and premium design, it delivers the ultimate blend of space, luxury, and capability."
+  },
+  {
+    brand: "Ford",
+    model: "Mustang",
+    price: "₦49,540,000",
+    image: "https://wallpapers.com/images/hd/mustang-pictures-sbej2cvsr4tfhm7s.jpg",
+    description: "The Ford Mustang is an iconic sports car, blending bold styling with powerful performance. Known for its muscular design, strong engine options, and thrilling driving experience, it stands as a symbol of American automotive culture and freedom on the road."
+  },
+  {
+    brand: "Ford",
+    model: "Edge",
+    price: "₦51,420,000",
+    image: "https://d3epdvpm6m1atm.cloudfront.net/billion/vehicleimages/icgm_CB12555_01.jpg",
+    description: "The Ford Edge is a stylish midsize SUV that combines a sleek design with practicality. It delivers a smooth ride, ample cargo space, and modern tech features, making it a dependable choice for both families and professionals."
+  },
+  {
+    brand: "Ford",
+    model: "Ranger",
+    price: "₦67,460,000",
+    image: "https://www.picclickimg.com/-IUAAeSwmzFo1zHs/2022-Ford-Ranger-20-EcoBlue-Wildtrak-Auto-4WD.webp",
+    description: "The Ford Ranger is a midsize pickup truck that balances strength and efficiency. Known for its rugged build, off-road capability, and practical features, it’s well-suited for both work and everyday driving."
+  },
+  {
+    brand: "Ford",
+    model: "Explorer",
+    price: "₦63,860,000",
+    image: "https://c.wallhere.com/photos/45/1d/Ford_2017_Explorer_netcarshow_netcar_car_images_car_photo-396980.jpg!d",
+    description: "The Ford Explorer is a versatile midsize SUV, offering a blend of comfort, space, and performance. With seating for the whole family, advanced technology, and strong towing capability, it’s built for both daily commutes and adventurous road trips."
+  },
+  {
+    brand: "Ford",
+    model: "F-150",
+    price: "₦88,690,000",
+    image: "https://autotras.com/image/3730/the-ford-f-150-5k-photo-920w.jpg",
+    description: "The Ford F-150 is a legendary full-size pickup truck, celebrated for its durability, power, and versatility. With strong towing and payload capacity, advanced technology, and a wide range of trims, it’s built to handle both tough jobs and everyday driving with ease."
+  },
+  {
+    brand: "Ford",
+    model: "Expedition",
+    price: "₦198,860,000",
+    image: "https://cdn.jdpower.com/JDPA_2020%20Ford%20Expedition%20King%20Ranch%20White%20Front%20Quarter%20View.jpg",
+    description: "The Ford Expedition is a full-size SUV built for power, space, and capability. With a commanding presence, three-row seating, advanced technology, and strong towing capacity, it’s ideal for large families and long journeys."
+  },
+  {
+    brand: "Hyundai",
+    model: "Elantra",
+    price: "₦38,800,000",
+    image: "https://wallpapercave.com/wp/wp4217119.jpg",
+    description: "The Hyundai Elantra is a sleek compact sedan that combines modern styling with efficiency. It offers advanced safety features, a comfortable cabin, and excellent fuel economy, making it a smart choice for both city and highway driving."
+  },
+  {
+    brand: "Hyundai",
+    model: "Sonata",
+    price: "₦44,650,000",
+    image: "https://www.motortrend.com/files/6621548d45955500083d504d/022-2024-hyundai-sonata-n-line.jpg",
+    description: "The Hyundai Sonata is a midsize sedan that blends elegance with performance. With its refined design, spacious interior, and advanced technology, it delivers a smooth and comfortable ride, making it a dependable choice for families and professionals alike.."
+  },
+  {
+    brand: "Hyundai",
+    model: "Tucson",
+    price: "₦62,600,000",
+    image: "https://hips.hearstapps.com/hmg-prod/images/2019-hyundai-tucson-1544723862.jpg",
+    description: "The Hyundai Tucson is a compact SUV that offers a balance of style, comfort, and practicality. With a roomy interior, modern safety features, and efficient performance, it’s well-suited for both city living and weekend getaways.."
+  },
+  {
+    brand: "Hyundai",
+    model: "Santa Fe",
+    price: "₦74,500,000",
+    image: "https://www.log.com.tr/wp-content/uploads/2022/01/2022-hyundai-santa-fe.jpg",
+    description: "The Hyundai Santa Fe is a midsize SUV designed for versatility and comfort. It features a spacious cabin, advanced safety technologies, and strong performance, making it a reliable choice for families and long-distance travel."
+  },
+  {
+    brand: "Hyundai",
+    model: "Venue",
+    price: "₦78,860,000",
+    image: "https://media.citizen.co.za/wp-content/uploads/2022/10/Hyundai-Venue-2022-update-front-static-nicobar-blue-1200x850.jpg",
+    description: "The Hyundai Venue is a subcompact SUV that combines affordability with modern style. It offers nimble handling, smart tech features, and efficient performance, making it perfect for urban driving and first-time SUV owners."
+  },
+  {
+    brand: "Hyundai",
+    model: "Palisade",
+    price: "₦108,860,000",
+    image: "https://static0.carbuzzimages.com/wordpress/wp-content/uploads/2024/03/1027422.jpg",
+    description: "The Hyundai Palisade is a full-size SUV that delivers luxury, space, and capability. With three-row seating, premium comfort features, and advanced technology, it’s built to accommodate families while offering a refined driving experience."
+  },
+  {
+    brand: "Kia",
+    model: "Rio",
+    price: "₦18,300,000",
+    image: "https://www.mauricemotors.mu/image/2017-Kia-Rio-88-7161062_2.jpg",
+    description: "The Kia Rio is a compact sedan and hatchback known for its affordability, efficiency, and reliability. With a sleek design, user-friendly features, and excellent fuel economy, it’s a practical choice for everyday commuting and city driving."
+  },
+  {
+    brand: "Kia",
+    model: "Seltos",
+    price: "₦38,000,000",
+    image: "https://dbz-images.dubizzle.com/images/2025/09/27/0b87be270b994030bae63d4ba4b6e4be-.jpeg?impolicy=dpc",
+    description: "The Kia Seltos is a stylish subcompact SUV that combines modern design with versatility. It features a spacious interior, advanced technology, and efficient performance, making it a great choice for drivers who want both practicality and flair."
+  },
+  {
+    brand: "Kia",
+    model: "Sorento",
+    price: "₦40,000,000",
+    image: "https://images.carexpert.com.au/resize/1600/-/app/uploads/2020/03/kia-sorento-21.jpg",
+    description: "The Kia Sorento is a midsize SUV offering a balance of space, comfort, and performance. With available three-row seating, advanced safety features, and a smooth ride, it’s designed to handle both family duties and long-distance travel with ease."
+  },
+  {
+    brand: "Kia",
+    model: "Carnival",
+    price: "₦58,800,000",
+    image: "https://stimg.cardekho.com/images/carexteriorimages/930x620/Kia/Carnival/7341/1677920139467/front-left-side-47.jpg?imwidth=890&impolicy=resize",
+    description: "The Kia Carnival is a family-focused minivan that combines spaciousness with modern design. It offers three-row seating, premium comfort features, and advanced technology, making it an ideal choice for large families and long journeys."
+  },
+  {
+    brand: "Kia",
+    model: "Telluride",
+    price: "₦78,860,000",
+    image: "https://image.ksldigital.com/c4d18ab6-258b-4bd2-9609-0f7f34429e8a.jpg",
+    description: "The Kia Telluride is a full-size SUV praised for its bold design, spacious three-row interior, and upscale features. With strong performance, advanced safety systems, and family-friendly comfort, it’s built for both everyday driving and long adventures."
+  },
+  {
+    brand: "Nissan",
+    model: "Sentra",
+    price: "₦34,000,000",
+    image: "https://s1.cdn.autoevolution.com/images/gallery/nissan-sentra-2023-7541_25.jpg",
+    description: "The Nissan Sentra is a compact sedan that blends efficiency with modern style. It offers a comfortable ride, advanced safety features, and excellent fuel economy, making it a practical choice for daily commuting and city driving."
+  },
+  {
+    brand: "Nissan",
+    model: "Altimas",
+    price: "₦48,800,000",
+    image: "https://nissannationpodcast.com/wp-content/uploads/2025/09/Are-Nissan-Altimas-Reliable.jpg",
+    description: "The Nissan Altima is a midsize sedan known for its blend of comfort, efficiency, and technology. With a spacious interior, advanced safety features, and available all-wheel drive, it delivers a smooth and reliable driving experience for both city and highway travel."
+  },
+  {
+    brand: "Nissan",
+    model: "Maxima",
+    price: "₦52,000,000",
+    image: "https://i.pinimg.com/736x/ea/69/14/ea69145b91cfe422e1e2a0ab82bfc9fd--nissan-maxima-dream-cars.jpg",
+    description: "The Nissan Maxima is a full-size sedan that combines sporty performance with luxury. Featuring a powerful engine, premium interior, and advanced technology, it delivers an engaging drive while maintaining comfort and sophistication."
+  },
+  {
+    brand: "Nissan",
+    model: "370Z",
+    price: "₦60,500,000",
+    image: "https://wallpapercave.com/wp/wO5N7K9.jpg",
+    description: "The Nissan 370Z is a classic sports car that emphasizes performance and style. With its powerful V6 engine, sharp handling, and sleek design, it delivers an exhilarating driving experience for enthusiasts who value speed and agility."
+  },
+  {
+    brand: "Nissan",
+    model: "Rogue (X-Trail)",
+    price: "₦68,000,000",
+    image: "https://skelbiu-img.dgn.lt/1_18_4194195549/nissan-rogue-x-trail.jpg",
+    description: "The Nissan Rogue, also known as the X-Trail in some markets, is a compact SUV designed for comfort, efficiency, and versatility. With a roomy interior, advanced safety features, and strong fuel economy, it’s ideal for families and everyday adventures."
+  },
+  {
+    brand: "Nissan",
+    model: "Pathfinder",
+    price: "₦70,000,000",
+    image: "https://ymimg1.b8cdn.com/uploads/used_car/2025/9/27/2053495/pictures/15776003/Nissan_Pathfinder_2020_in_Dubai_2053495_0.JPG",
+    description: "The Nissan Pathfinder is a midsize SUV built for family comfort and adventure. Offering three-row seating, strong towing capacity, and advanced safety features, it’s designed to handle both daily commutes and long road trips with ease."
+  },
+  {
+    brand: "Nissan",
+    model: "Frontier (Navara)",
+    price: "₦81,000,000",
+    image: "https://www.philmotors.com/image/2009-Nissan-Frontier-Navara-154-2577965_2.jpg",
+    description: "The Nissan Frontier, also known as the Navara in some markets, is a midsize pickup truck that balances toughness with everyday practicality. With strong hauling capability, off-road readiness, and modern features, it’s built for both work and adventure."
+  },
+  {
+    brand: "Nissan",
+    model: "Patrol",
+    price: "₦86,000,000",
+    image: "https://ymimg1.b8cdn.com/uploads/used_car/2025/9/26/2053170/pictures/15772684/Nissan_Patrol_2025_in_Dubai_2053170_18.jpeg",
+    description: "The Nissan Patrol is a full-size SUV renowned for its rugged durability and off-road capability. With a commanding presence, powerful performance, and a spacious, luxurious interior, it’s built to conquer tough terrains while providing comfort for the whole family."
+  },
+  {
+    brand: "Volkswagen",
+    model: "Golf",
+    price: "₦8,000,000",
+    image: "https://d.modshost.site/wp-content/uploads/2023/03/24090015/beamng-volkswagen-golf-r-estate-mk7-2017-v1-1-1.jpg",
+    description: "The Volkswagen Golf is a compact hatchback celebrated for its practicality, efficiency, and refined driving dynamics. With a versatile interior, advanced technology, and a balance of comfort and performance, it’s a smart choice for both city driving and long trips."
+  },
+  {
+    brand: "Volkswagen",
+    model: "Passat",
+    price: "₦12,000,000",
+    image: "https://images6.alphacoders.com/107/thumb-1920-1072566.jpg",
+    description: "The Volkswagen Passat is a midsize sedan that blends comfort, space, and refinement. With a roomy interior, advanced safety features, and smooth performance, it’s designed to deliver a relaxed and dependable driving experience for families and professionals."
+  },
+  {
+    brand: "Volkswagen",
+    model: "Jetta",
+    price: "₦17,000,000",
+    image: "https://car-images.bauersecure.com/pagefiles/77740/vw_jetta_90.jpg",
+    description: "The Volkswagen Jetta is a compact sedan that combines efficiency with sophistication. Offering a comfortable ride, modern technology, and excellent fuel economy, it’s a practical and stylish choice for daily commuting and longer journeys."
+  },
+  {
+    brand: "Volkswagen",
+    model: "Arteon",
+    price: "₦32,000,000",
+    image: "https://images3.alphacoders.com/108/thumb-1920-1083433.jpg",
+    description: "The Volkswagen Arteon is a premium midsize sedan that blends sleek coupe-like styling with comfort and performance. With a refined interior, advanced technology, and a smooth yet powerful drive, it offers an upscale experience for those seeking both elegance and practicality."
+  },
+  {
+    brand: "Volkswagen",
+    model: "Tiguan",
+    price: "₦48,700,000",
+    image: "https://wallpapercave.com/wp/wp4322290.jpg",
+    description: "The Volkswagen Tiguan is a compact SUV that combines practicality with modern style. Offering a spacious interior, advanced safety features, and efficient performance, it’s a versatile choice for families and drivers who want comfort with everyday usability."
+  },
+  {
+    brand: "Volkswagen",
+    model: "Touareg",
+    price: "₦60,500,000",
+    image: "https://cimg0.ibsrv.net/ibimg/hgm/1920x1080-1/100/886/2024-volkswagen-touareg_100886108.jpg",
+    description: "The Volkswagen Touareg is a midsize luxury SUV that delivers a blend of power, comfort, and advanced technology. With premium interior finishes, strong performance, and off-road capability, it’s designed for drivers who want both refinement and versatility."
+  },
+  {
+    brand: "Volkswagen",
+    model: "Atlas",
+    price: "₦80,000,000",
+    image: "https://www.carpro.com/hubfs/2022-vw-atlas-sel-premium-r-line-blue-carpro.jpg",
+    description: "The Volkswagen Atlas is a full-size SUV built for families and space. With three-row seating, a roomy interior, advanced safety technology, and a smooth ride, it’s designed to handle daily commutes, road trips, and everything in between with ease."
+  },
+  {
+    brand: "Chevrolet",
+    model: "Malibu",
+    price: "₦30,000,000",
+    image: "https://images.coolwallpapers.me/picsup/1184591-chevrolet-malibu.jpg",
+    description: "The Chevrolet Malibu is a midsize sedan that blends style, comfort, and efficiency. With a sleek design, modern technology, and a smooth driving experience, it’s a practical choice for both daily commuting and long-distance travel."
+  },
+  {
+    brand: "Chevrolet",
+    model: "Cruze",
+    price: "₦27,000,000",
+    image: "https://media.ed.edmunds-media.com/chevrolet/cruze/2013/oem/2013_chevrolet_cruze_sedan_2lt_fq_oem_1_1600.jpg",
+    description: "The Chevrolet Cruze is a compact sedan and hatchback known for its efficiency and practicality. With excellent fuel economy, a comfortable cabin, and modern tech features, it’s designed for drivers who want reliability and value in a small car."
+  },
+  {
+    brand: "Chevrolet",
+    model: "Camaro",
+    price: "₦80,000,000",
+    image: "https://wallsdesk.com/wp-content/uploads/2017/01/Chevrolet-Camaro-High-Quality-Wallpapers.jpg",
+    description: "The Chevrolet Camaro is a legendary sports car that delivers bold styling and thrilling performance. With powerful engine options, sharp handling, and an iconic design, it’s built for drivers who crave speed and excitement on the road."
+  },
+  {
+    brand: "Chevrolet",
+    model: "Equinox",
+    price: "₦73,000,000",
+    image: "https://www.carscoops.com/wp-content/uploads/2023/10/Chevrolet-Equinox-China.jpg",
+    description: "The Chevrolet Equinox is a compact SUV that balances comfort, efficiency, and versatility. With a spacious interior, advanced safety features, and smooth performance, it’s a dependable choice for families and everyday driving needs."
+  },
+  {
+    brand: "Chevrolet",
+    model: "Traverse",
+    price: "₦68,500,000",
+    image: "https://p4.wallpaperbetter.com/wallpaper/165/880/887/2016-chevrolet-traverse-hd-wallpaper-preview.jpg",
+    description: "The Chevrolet Traverse is a midsize SUV offering three-row seating, generous cargo space, and modern technology. With a smooth ride, advanced safety features, and strong performance, it’s designed to meet the needs of families and long-distance travelers."
+  },
+  {
+    brand: "Chevrolet",
+    model: "Suburban",
+    price: "₦90,000,000",
+    image: "https://wallpapercave.com/wp/wp2445405.jpg",
+    description: "The Chevrolet Suburban is a full-size SUV known for its commanding presence, expansive interior, and powerful performance. With three-row seating, exceptional cargo capacity, and strong towing ability, it’s built for large families and demanding lifestyles."
+  },
+  {
+    brand: "Chevrolet",
+    model: "Silverado",
+    price: "₦87,900,000",
+    image: "https://facts.net/wp-content/uploads/2025/05/40-facts-about-chevrolet-silverado-1746421718.jpg",
+    description: "The Chevrolet Silverado is a full-size pickup truck built for strength and dependability. With powerful engine options, impressive towing and hauling capabilities, and modern technology, it’s designed to handle tough jobs while delivering everyday comfort."
+  },
+  {
+    brand: "Audi",
+    model: "A3",
+    price: "₦87,900,000",
+    image: "https://carsguide.ikman.lk/wp-content/uploads/2023/06/Audi-A3-e1686021732731.jpg",
+    description: "The Chevrolet Silverado is a full-size pickup truck built for strength and dependability. With powerful engine options, impressive towing and hauling capabilities, and modern technology, it’s designed to handle tough jobs while delivering everyday comfort."
+  },
+  {
+    brand: "Audi",
+    model: "A4",
+    price: "₦87,900,000",
+    image: "https://images.coolwallpapers.me/picsup/1482452-audi-a4.jpg",
+    description: "The Chevrolet Silverado is a full-size pickup truck built for strength and dependability. With powerful engine options, impressive towing and hauling capabilities, and modern technology, it’s designed to handle tough jobs while delivering everyday comfort."
+  },
+  {
+    brand: "Audi",
+    model: "A6",
+    price: "₦87,900,000",
+    image: "https://hips.hearstapps.com/hmg-prod/images/2019-audi-a6-3-0t-99leadgallery-1545842828.jpg",
+    description: "The Chevrolet Silverado is a full-size pickup truck built for strength and dependability. With powerful engine options, impressive towing and hauling capabilities, and modern technology, it’s designed to handle tough jobs while delivering everyday comfort."
+  },
+  {
+    brand: "Audi",
+    model: "Q3",
+    price: "₦87,900,000",
+    image: "https://www.companyofcars.com/wp-content/uploads/2023/07/b1cdc19f9cdf68b12fbc62fcfe832f54x-scaled.jpg",
+    description: "The Chevrolet Silverado is a full-size pickup truck built for strength and dependability. With powerful engine options, impressive towing and hauling capabilities, and modern technology, it’s designed to handle tough jobs while delivering everyday comfort."
+  },
+  {
+    brand: "Audi",
+    model: "Q5",
+    price: "₦87,900,000",
+    image: "https://www.jbcarpages.com/audi/q5/wallpapers/main/wallpaper10/widescreen.jpg",
+    description: "The Chevrolet Silverado is a full-size pickup truck built for strength and dependability. With powerful engine options, impressive towing and hauling capabilities, and modern technology, it’s designed to handle tough jobs while delivering everyday comfort."
+  },
+  {
+    brand: "Audi",
+    model: "Q7",
+    price: "₦87,900,000",
+    image: "https://www.topgear.com/sites/default/files/images/cars-road-test/2017/10/4d9483729c6ef6f883c60bf851f9562a/audi_q7_e-tron_059.jpg",
+    description: "The Chevrolet Silverado is a full-size pickup truck built for strength and dependability. With powerful engine options, impressive towing and hauling capabilities, and modern technology, it’s designed to handle tough jobs while delivering everyday comfort."
+  },
+  {
+    brand: "Audi",
+    model: "Q8",
+    price: "₦87,900,000",
+    image: "https://auto.hindustantimes.com/cms-images/audi_rs-q8-2025/images/exterior_audi-rs-q8-2025_front-left-side_1540x1140.jpg",
+    description: "The Chevrolet Silverado is a full-size pickup truck built for strength and dependability. With powerful engine options, impressive towing and hauling capabilities, and modern technology, it’s designed to handle tough jobs while delivering everyday comfort."
+  },
+  {
+    brand: "Lexus",
+    model: "IS",
+    price: "₦37,400,000",
+    image: "https://cartests.co.nz/sites/companyvehicle/public/article/image/Lexus-IS.jpg",
+    description: "The Lexus IS is a luxury sport sedan that blends sharp styling with refined performance. With a well-crafted interior, advanced technology, and agile handling, it offers a balance of comfort and excitement for drivers seeking both elegance and sportiness."
+  },
+  {
+    brand: "Lexus",
+    model: "ES",
+    price: "₦55,600,000",
+    image: "https://hips.hearstapps.com/hmg-prod/images/2019-lexus-es350-static-1555429210.jpg",
+    description: "The Lexus ES is a midsize luxury sedan known for its comfort, refinement, and reliability. With a spacious interior, advanced safety features, and a smooth, quiet ride, it’s designed to deliver a premium driving experience for both daily commutes and long journeys."
+  },
+  {
+    brand: "Lexus",
+    model: "LS",
+    price: "₦49,200,000",
+    image: "https://img.pistonheads.com/Fullsize/lexus/ls-600h/600h-5-0-v8-l-cvt-4wd-euro-5-s-s-4dr/lexus-ls-600h-600h-5-0-v8-l-cvt-4wd-euro-5-s-s-4dr-962247675-4.jpg",
+    description: "The Lexus LS is a flagship full-size luxury sedan that embodies elegance and innovation. With premium craftsmanship, advanced technology, and a smooth yet powerful drive, it delivers exceptional comfort and sophistication for those seeking top-tier luxury."
+  },
+  {
+    brand: "Lexus",
+    model: "RX",
+    price: "₦66,800,000",
+    image: "https://www.nigeriacarmart.com/upload/25/7u/onmq/2010-lexus-rx-rx-350-jd.webp",
+    description: "The Lexus RX is a midsize luxury SUV that combines style, comfort, and advanced technology. With a refined interior, smooth performance, and strong reliability, it’s a versatile choice for families and professionals seeking both practicality and luxury."
+  },
+  {
+    brand: "Lexus",
+    model: "LX",
+    price: "₦87,500,000",
+    image: "https://wallpaperaccess.com/full/4014525.jpg",
+    description: "The Lexus LX is a full-size luxury SUV that blends rugged capability with premium comfort. With powerful performance, advanced off-road features, and a lavish interior, it’s built to handle challenging terrains while delivering a first-class driving experience."
+  },
+  {
+    brand: "Tesla",
+    model: "Model 3",
+    price: "₦67,900,000",
+    image: "https://images.cars.com/cldstatic/wp-content/uploads/tesla-model-3-2024-01-exterior-front-angle-grey-scaled.jpg",
+    description: "The Tesla Model 3 is a compact electric sedan that blends efficiency with performance. Offering a minimalist interior, long driving range, and advanced autopilot features, it’s designed to make electric driving accessible while delivering a smooth and responsive ride."
+  },
+  {
+    brand: "Tesla",
+    model: "Model S",
+    price: "₦71,500,000",
+    image: "https://images.autouncle.com/uk/car_images/d73d4c7c-4c15-4bec-8169-04039b25c87e_tesla-model-s-315kw-90kwh-dual-motor-5dr-nav.jpg",
+    description: "The Tesla Model S is a luxury electric sedan known for its sleek design, cutting-edge technology, and incredible performance. With long-range capability, rapid acceleration, and advanced autopilot features, it sets the standard for modern electric vehicles."
+  },
+  {
+    brand: "Tesla",
+    model: "Model Y",
+    price: "₦77,000,000",
+    image: "https://images.carexpert.com.au/resize/3000/-/app/uploads/2023/03/Tesla-Model-Y-Performance-HERO-16x9-1.jpg",
+    description: "The Tesla Model Y is a compact electric SUV that combines efficiency, versatility, and modern technology. With spacious seating, impressive driving range, and advanced safety features, it’s designed to deliver both practicality and high performance in an all-electric package."
+  },
+  {
+    brand: "Tesla",
+    model: "Cybertruck",
+    price: "₦600,000,000",
+    image: "https://cdn.motor1.com/images/mgl/8ApjO2/s1/tesla-cybertruck.jpg",
+    description: "The Tesla Cybertruck is an all-electric pickup truck that stands out with its futuristic, angular design and ultra-durable exoskeleton. Built for strength and utility, it offers impressive towing capacity, long electric range, and advanced technology, redefining what a pickup can be."
+  },
+  {
+    brand: "Rolls-Royce",
+    model: "Phantom",
+    price: "₦900,900,000",
+    image: "https://prestigeandperformancecar.com/wp-content/uploads/P90270128_highRes_phantom-vii.jpg",
+    description: "The Rolls-Royce Phantom is a flagship ultra-luxury sedan, renowned for its unmatched craftsmanship, quiet elegance, and commanding presence. With a hand-built interior, cutting-edge technology, and a smooth yet powerful ride, it represents the pinnacle of automotive luxury."
+  },
+  {
+    brand: "Rolls-Royce",
+    model: "Ghost",
+    price: "₦970,000,000",
+    image: "https://wallpapercave.com/wp/wp2693832.jpg",
+    description: "The Rolls-Royce Ghost is a luxury sedan that blends timeless elegance with modern innovation. Offering a serene ride, handcrafted interiors, and powerful performance, it delivers the signature Rolls-Royce experience in a slightly more understated form than the Phantom."
+  },
+  {
+    brand: "Rolls-Royce",
+    model: "Wraith",
+    price: "₦850,000,000",
+    image: "https://www.exoticshunter.com/imagetag/123/main/l/Used-2019-Rolls-Royce-Wraith-Black-Badge-Adamas-Edition-1655133607.jpg",
+    description: "The Rolls-Royce Wraith is a luxury grand tourer that combines bold design with exhilarating performance. Featuring a powerful V12 engine, a sleek fastback profile, and a hand-crafted interior, it delivers both dynamic driving and the ultimate in refined comfort."
+  },
+  {
+    brand: "Rolls-Royce",
+    model: "Dawn",
+    price: "₦980,900,000",
+    image: "https://i.pinimg.com/originals/3e/0b/48/3e0b48675e983efee11a2ed568304467.jpg",
+    description: "The Rolls-Royce Dawn is a luxury convertible that embodies elegance and open-air freedom. With a quiet yet powerful V12 engine, handcrafted interiors, and a smooth drop-top design, it delivers an unmatched blend of sophistication and relaxed cruising."
+  },
+  {
+    brand: "Rolls-Royce",
+    model: "Cullinan",
+    price: "₦1050,000,000",
+    image: "https://wallpapercave.com/wp/wp9155966.jpg",
+    description: "The Rolls-Royce Cullinan is an ultra-luxury SUV that combines unmatched comfort with commanding capability. With a spacious handcrafted interior, advanced technology, and a smooth yet powerful drive, it brings the prestige of Rolls-Royce to both city streets and rugged terrains."
+  },
+  {
+    brand: "Rolls-Royce",
+    model: "Spectre",
+    price: "₦1100,000,000",
+    image: "https://static0.carbuzzimages.com/wordpress/wp-content/uploads/2024/04/rolls-royce-spectre-mansory-feature-2.jpg",
+    description: "The Rolls-Royce Spectre is the brand’s first all-electric ultra-luxury coupe, combining timeless Rolls-Royce elegance with cutting-edge EV technology. With a striking design, handcrafted interior, and whisper-quiet electric performance, it redefines sustainable luxury while maintaining the marque’s signature prestige."
+  }
+];
+
+/** Render Cards **/
+const grid = document.getElementById("grid");
+
+function renderCars(cars) {
+  grid.innerHTML = "";
+  cars.forEach(car => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <img src="${car.image}" alt="${car.brand} ${car.model}">
+      <div class="content">
+        <div class="brand">${car.brand}</div>
+        <div class="model">${car.model}</div>
+        <div class="price">${car.price}</div>
+        <button class="show-more">Show More</button>
+        <div class="description">${car.description}</div>
+      </div>
+    `;
+    const btn = card.querySelector(".show-more");
+    btn.addEventListener("click", () => {
+      card.classList.toggle("expanded");
+      btn.textContent = card.classList.contains("expanded") ? "Show Less" : "Show More";
+    });
+    grid.appendChild(card);
+  });
+}
+
+/** Search Function **/
+function searchCars() {
+  const query = document.getElementById("search").value.toLowerCase();
+  const filtered = DATA.filter(car =>
+    car.brand.toLowerCase().includes(query) || car.model.toLowerCase().includes(query)
+  );
+  renderCars(filtered);
+}
+
+/** Initialize **/
+renderCars(DATA);
+</script>
+</body>
+</html>
